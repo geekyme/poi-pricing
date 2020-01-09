@@ -1,13 +1,19 @@
 package com.example.poipricing.api.controllers;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.CellValue;
+import org.apache.poi.ss.usermodel.FormulaEvaluator;
+import org.apache.poi.ss.util.CellReference;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
@@ -17,10 +23,26 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 @RestController
 public class QuotationController {
-  @GetMapping("/calculate")
-  public int calculate() throws Throwable {
+  @GetMapping("/calculate/{value}")
+  @ResponseBody
+  public double calculate(@PathVariable int value) throws Throwable {
+    Cell cell = null;
 
-    return 0;
+    FileInputStream file = new FileInputStream(new File("CountriesDetails.xlsx"));
+    XSSFWorkbook workbook = new XSSFWorkbook(file);
+    FormulaEvaluator evaluator = workbook.getCreationHelper().createFormulaEvaluator();
+    System.out.println("found file!");
+
+    XSSFSheet sheet = workbook.getSheet("Country");
+    cell = getCell(sheet, "C2");
+    System.out.println("Setting cell value: " + value);
+    cell.setCellValue(value);
+
+
+    cell = getCell(sheet, "C7");
+    CellValue calculated = evaluator.evaluate(cell);
+
+    return calculated.getNumberValue();
   }
 
   @GetMapping("/generate")
@@ -75,5 +97,13 @@ public class QuotationController {
     } finally {
       // workbook.close();
     }
+  }
+
+  private Cell getCell(XSSFSheet sheet, String addr) {
+    CellReference cellReference = new CellReference(addr);
+    Row row = sheet.getRow(cellReference.getRow());
+    Cell cell = row.getCell(cellReference.getCol()); 
+
+    return cell;
   }
 }
