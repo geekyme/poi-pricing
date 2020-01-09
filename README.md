@@ -18,6 +18,6 @@ First, `cd api`. Then:
 
 3. Tested on a machine with 6 cores - Got 9-10K rps. See this [PR](https://github.com/geekyme/poi-pricing/pull/3)
 
-|           Loadtest           |          Monitor           |
-| :--------------------------: | :------------------------: |
-| ![](https://...loadtest.png) | ![](https://...memory.png) |
+|      Loadtest       |      Monitor      |
+| :-----------------: | :---------------: |
+| ![](./loadtest.png) | ![](./memory.png) |
