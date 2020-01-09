@@ -17,3 +17,7 @@ First, `cd api`. Then:
 2. Run with 100 concurrent users over 60s - `k6 run loadtest.js --vus 100 --duration 60s`
 
 3. Tested on a machine with 6 cores - Got 9-10K rps. See this [PR](https://github.com/geekyme/poi-pricing/pull/3)
+
+|           Loadtest           |          Monitor           |
+| :--------------------------: | :------------------------: |
+| ![](https://...loadtest.png) | ![](https://...memory.png) |
