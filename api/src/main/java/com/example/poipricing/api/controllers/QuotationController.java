@@ -31,7 +31,6 @@ public class QuotationController {
     FileInputStream file = new FileInputStream(new File("CountriesDetails.xlsx"));
     XSSFWorkbook workbook = new XSSFWorkbook(file);
     FormulaEvaluator evaluator = workbook.getCreationHelper().createFormulaEvaluator();
-    System.out.println("found file!");
 
     XSSFSheet sheet = workbook.getSheet("Country");
     cell = getCell(sheet, "C2");
