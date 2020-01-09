@@ -1,5 +1,6 @@
 package com.example.poipricing.api.controllers;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -23,13 +24,14 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 @RestController
 public class QuotationController {
+  @Autowired
+  XSSFWorkbook workbook;
+  
   @GetMapping("/calculate/{value}")
   @ResponseBody
   public double calculate(@PathVariable int value) throws Throwable {
     Cell cell = null;
 
-    FileInputStream file = new FileInputStream(new File("CountriesDetails.xlsx"));
-    XSSFWorkbook workbook = new XSSFWorkbook(file);
     FormulaEvaluator evaluator = workbook.getCreationHelper().createFormulaEvaluator();
 
     XSSFSheet sheet = workbook.getSheet("Country");
