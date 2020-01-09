@@ -12,11 +12,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.CellValue;
-import org.apache.poi.ss.usermodel.FormulaEvaluator;
-import org.apache.poi.ss.util.CellReference;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import com.example.poipricing.api.config.SyncWorkbook;
 
 /**
  * QuotationController
@@ -25,25 +23,12 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 @RestController
 public class QuotationController {
   @Autowired
-  XSSFWorkbook workbook;
+  SyncWorkbook workbook;
   
   @GetMapping("/calculate/{value}")
   @ResponseBody
   public double calculate(@PathVariable int value) throws Throwable {
-    Cell cell = null;
-
-    FormulaEvaluator evaluator = workbook.getCreationHelper().createFormulaEvaluator();
-
-    XSSFSheet sheet = workbook.getSheet("Country");
-    cell = getCell(sheet, "C2");
-    System.out.println("Setting cell value: " + value);
-    cell.setCellValue(value);
-
-
-    cell = getCell(sheet, "C7");
-    CellValue calculated = evaluator.evaluate(cell);
-
-    return calculated.getNumberValue();
+    return workbook.calculate(value);
   }
 
   @GetMapping("/generate")
@@ -98,13 +83,5 @@ public class QuotationController {
     } finally {
       // workbook.close();
     }
-  }
-
-  private Cell getCell(XSSFSheet sheet, String addr) {
-    CellReference cellReference = new CellReference(addr);
-    Row row = sheet.getRow(cellReference.getRow());
-    Cell cell = row.getCell(cellReference.getCol()); 
-
-    return cell;
   }
 }
