@@ -9,6 +9,7 @@ ENV ARTIFACT_NAME=api-0.0.1-SNAPSHOT.jar
 ENV APP_HOME=/usr/app/
 WORKDIR $APP_HOME
 COPY --from=TEMP_BUILD_IMAGE $APP_HOME/build/libs/$ARTIFACT_NAME .
-COPY --from=TEMP_BUILD_IMAGE $APP_HOME/CountriesDetails.xlsx .
+COPY --from=TEMP_BUILD_IMAGE $APP_HOME/SimpleCalculation.xlsx .
+COPY --from=TEMP_BUILD_IMAGE $APP_HOME/AdvancedCalculation.xlsx .
 EXPOSE 8080
 CMD java -jar $ARTIFACT_NAME

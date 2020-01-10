@@ -1,9 +1,9 @@
-import { check } from "k6";
+import { check, group } from "k6";
 import http from "k6/http";
 
-export default function() {
+export function loadtestSimple() {
   const value = Math.ceil(Math.random() * 10000);
-  let res = http.get("http://localhost:8080/calculate/" + value);
+  let res = http.get("http://localhost:8080/calculate/simple/" + value);
   check(res, {
     "is correct response": r => {
       if (r.status === 200) {
@@ -14,4 +14,8 @@ export default function() {
       }
     }
   });
+}
+
+export default function() {
+  group("simple", loadtestSimple);
 }
