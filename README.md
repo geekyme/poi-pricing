@@ -30,6 +30,6 @@ First, `cd api`. Then:
 | :-----------------: | :---------------: |
 | ![](./loadtest.png) | ![](./memory.png) |
 
-4. (Optional) to run the advanced scenario - `k6 run loadtest/advanced.js --vus 100 --duration 60s`. This one clocks about 250 rps
+4. (Optional) to run the advanced scenario - `k6 run loadtest/advanced.js --vus 100 --duration 60s`. This one clocks about [700 rps](https://github.com/geekyme/poi-pricing/pull/4)
 
 5. (Optional) to run all scenarios - `k6 run loadtest/index.js --vus 100 --duration 60s`
