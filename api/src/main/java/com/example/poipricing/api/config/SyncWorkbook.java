@@ -13,18 +13,20 @@ import org.apache.poi.ss.usermodel.FormulaEvaluator;
 public class SyncWorkbook {
   private XSSFWorkbook simpleWorkbook;
   private XSSFWorkbook advancedWorkbook;
+  private FormulaEvaluator simpleFormula;
+  private FormulaEvaluator advancedFormula;
   
   public SyncWorkbook() throws Exception {
     FileInputStream simple = new FileInputStream(new File("SimpleCalculation.xlsx"));
     FileInputStream advanced = new FileInputStream(new File("AdvancedCalculation.xlsx"));
     this.simpleWorkbook = new XSSFWorkbook(simple);
     this.advancedWorkbook = new XSSFWorkbook(advanced);
+    this.simpleFormula = this.simpleWorkbook.getCreationHelper().createFormulaEvaluator();
+    this.advancedFormula = this.advancedWorkbook.getCreationHelper().createFormulaEvaluator();
   }
 
   synchronized public double calculateSimple(int value) {
     Cell cell;
-
-    FormulaEvaluator evaluator = simpleWorkbook.getCreationHelper().createFormulaEvaluator();
 
     XSSFSheet sheet = simpleWorkbook.getSheet("Country");
     cell = getCell(sheet, "C2");
@@ -33,14 +35,12 @@ public class SyncWorkbook {
 
 
     cell = getCell(sheet, "C7");
-    CellValue calculated = evaluator.evaluate(cell);
+    CellValue calculated = simpleFormula.evaluate(cell);
 
     return calculated.getNumberValue();
   }
 
   synchronized public double calculateAdvanced(double medicard, double managedCare, double privateInsurance, double selfPay) {
-    FormulaEvaluator evaluator = advancedWorkbook.getCreationHelper().createFormulaEvaluator();
-
     XSSFSheet inputSheet = advancedWorkbook.getSheet("2A- Data Entry Worksheet");
     XSSFSheet outputSheet = advancedWorkbook.getSheet("2B- Est. Rev. Proj. Wksheet");
     System.out.println("Setting medicard: " + medicard);
@@ -54,7 +54,7 @@ public class SyncWorkbook {
     
     // result
     Cell cell = getCell(outputSheet, "L80");
-    CellValue calculated = evaluator.evaluate(cell);
+    CellValue calculated = advancedFormula.evaluate(cell);
 
     return calculated.getNumberValue();
   }
