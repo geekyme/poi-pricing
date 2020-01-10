@@ -12,8 +12,9 @@ First, `cd api`. Then:
 
 ### The spreadsheets
 
-SimpleCalculation.xlsx - Just a simple spreadsheet with 4 values to be summed up.
-AdvancedCalculation.xlsx - Advanced spreadsheet that calculates projected revenue of a clinic. With colors, macros, lots of values and formulas - A real scenario of what an actuary will produce.
+**SimpleCalculation.xlsx** - Just a simple spreadsheet with 4 values to be summed up.
+
+**AdvancedCalculation.xlsx** - Advanced spreadsheet that calculates projected revenue of a clinic. With colors, macros, lots of values and formulas - A real scenario of what an actuary will produce.
 
 ### Run the load test
 
@@ -27,6 +28,6 @@ AdvancedCalculation.xlsx - Advanced spreadsheet that calculates projected revenu
 | :-----------------: | :---------------: |
 | ![](./loadtest.png) | ![](./memory.png) |
 
-4. Optionally, to run the advanced spreadsheet - `k6 run loadtest/advanced.js --vus 100 --duration 60s`. This one clocks about 250 rps
+4. (Optional) to run the advanced spreadsheet - `k6 run loadtest/advanced.js --vus 100 --duration 60s`. This one clocks about 250 rps
 
-5. Optionally, to run the all spreadsheets - `k6 run loadtest/index.js --vus 100 --duration 60s`
+5. (Optional) to run all spreadsheets - `k6 run loadtest/index.js --vus 100 --duration 60s`
