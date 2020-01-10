@@ -32,6 +32,7 @@ public class SyncWorkbook {
     cell = getCell(sheet, "C2");
     System.out.println("Setting cell value: " + value);
     cell.setCellValue(value);
+    simpleFormula.notifyUpdateCell(cell);
 
 
     cell = getCell(sheet, "C7");
@@ -41,19 +42,32 @@ public class SyncWorkbook {
   }
 
   synchronized public double calculateAdvanced(double medicard, double managedCare, double privateInsurance, double selfPay) {
+    Cell cell;
     XSSFSheet inputSheet = advancedWorkbook.getSheet("2A- Data Entry Worksheet");
     XSSFSheet outputSheet = advancedWorkbook.getSheet("2B- Est. Rev. Proj. Wksheet");
+
     System.out.println("Setting medicard: " + medicard);
-    getCell(inputSheet, "B6").setCellValue(medicard);
+    cell = getCell(inputSheet, "B6");
+    cell.setCellValue(medicard);
+    advancedFormula.notifyUpdateCell(cell);
+
     System.out.println("Setting managedCare: " + managedCare);
-    getCell(inputSheet, "B7").setCellValue(managedCare);
+    cell = getCell(inputSheet, "B7");
+    cell.setCellValue(managedCare);
+    advancedFormula.notifyUpdateCell(cell);
+
     System.out.println("Setting privateInsurance: " + privateInsurance);
-    getCell(inputSheet, "B8").setCellValue(privateInsurance);
+    cell = getCell(inputSheet, "B8");
+    cell.setCellValue(privateInsurance);
+    advancedFormula.notifyUpdateCell(cell);
+
     System.out.println("Setting selfPay: " + selfPay);
-    getCell(inputSheet, "B9").setCellValue(selfPay);
+    cell = getCell(inputSheet, "B9");
+    cell.setCellValue(selfPay);
+    advancedFormula.notifyUpdateCell(cell);
     
     // result
-    Cell cell = getCell(outputSheet, "L80");
+    cell = getCell(outputSheet, "L80");
     CellValue calculated = advancedFormula.evaluate(cell);
 
     return calculated.getNumberValue();
