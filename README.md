@@ -1,8 +1,15 @@
 # POI Pricing
 
-A little experiment to see how we can dynamically calculate pricing with [Apache POI](https://poi.apache.org/) + a spreadsheet
+A little experiment to see how we can dynamically calculate pricing with [Apache POI](https://poi.apache.org/) + a spreadsheet.
 
-First, `cd api`. Then:
+### Limitations
+
+* Current implementation uses a single workbook instance preloaded into memory and protected with `synchronized`
+* This approach heavily reduces throughput while guaranteeing safety in formula calculation
+* Potential optimizations to explore:
+  1. Cloned workbooks in memory to remove usage of `synchronized`
+  2. Pool of workbooks so that concurrent threads may use a free workbook, much like socket connections
+  3. Dive deeper into POI's implementation of FormulaEvaluator to see whether there are thread-safe implementations / other ways of getting cells evaluated
 
 ### The spreadsheets
 
@@ -12,7 +19,7 @@ First, `cd api`. Then:
 
 ### Setup
 
-1. `./gradlew bootRun`
+1. `cd api && ./gradlew bootRun`
 
 2. **Simple case**: GET `http://localhost:8080/calculate/simple/780` or any number `http://localhost:8080/calculate/simple/{value}`
 
@@ -20,11 +27,13 @@ First, `cd api`. Then:
 
 ### Run the load test
 
-1. Install [k6](https://k6.io/)
+1. `cd api`
 
-2. Run the simple scenario with 100 concurrent users over 60s - `k6 run loadtest/simple.js --vus 100 --duration 60s`
+2. Install [k6](https://k6.io/)
 
-3. Tested on a machine with 6 cores - Got 9-10K rps. Your results may vary. See this [PR](https://github.com/geekyme/poi-pricing/pull/3)
+3. Run the simple scenario with 100 concurrent users over 60s - `k6 run loadtest/simple.js --vus 100 --duration 60s`
+
+4. Tested on a machine with 6 cores - Got 9-10K rps. Your results may vary. See this [PR](https://github.com/geekyme/poi-pricing/pull/3)
 
 |      Loadtest       |      Monitor      |
 | :-----------------: | :---------------: |
