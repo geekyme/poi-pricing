@@ -11,21 +11,22 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class PoolWorkbook {
   private ConcurrentLinkedQueue<XSSFWorkbook> pool = new ConcurrentLinkedQueue<>();
+  private ConcurrentHashMap<XSSFWorkbook, FormulaEvaluator> workbookFormulaEvaluatorConcurrentHashMap = new ConcurrentHashMap<>();
   private int count = 0;
 
   public double calculate(int value) throws IOException {
     XSSFWorkbook workbook = getWorkbook();
-    FormulaEvaluator formula = workbook.getCreationHelper().createFormulaEvaluator();
+    FormulaEvaluator formula = workbookFormulaEvaluatorConcurrentHashMap.get(workbook);
 
     Cell cell;
 
     XSSFSheet sheet = workbook.getSheet("Country");
     cell = getCell(sheet, "C2");
-    //System.out.println("Setting cell value: " + value);
     cell.setCellValue(value);
     formula.notifyUpdateCell(cell);
 
@@ -50,9 +51,9 @@ public class PoolWorkbook {
     XSSFWorkbook workbook = pool.poll();
 
     if (workbook == null) {
-      System.out.println("create workbook " + ++count);
       FileInputStream fileInputStream = new FileInputStream(new File("SimpleCalculation.xlsx"));
-      return new XSSFWorkbook(fileInputStream);
+      workbook = new XSSFWorkbook(fileInputStream);
+      workbookFormulaEvaluatorConcurrentHashMap.put(workbook, workbook.getCreationHelper().createFormulaEvaluator());
     }
 
     return workbook;
