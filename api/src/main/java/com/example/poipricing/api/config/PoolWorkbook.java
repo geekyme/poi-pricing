@@ -15,12 +15,12 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class PoolWorkbook {
-  private ConcurrentLinkedQueue<XSSFWorkbook> pool = new ConcurrentLinkedQueue<>();
+  private ConcurrentHashMap<String, ConcurrentLinkedQueue<XSSFWorkbook>> poolMap = new ConcurrentHashMap<>();
   private ConcurrentHashMap<XSSFWorkbook, FormulaEvaluator> workbookFormulaEvaluatorConcurrentHashMap = new ConcurrentHashMap<>();
-  private int count = 0;
 
-  public double calculate(int value) throws IOException {
-    XSSFWorkbook workbook = getWorkbook();
+  public double calculateSimple(int value) throws IOException {
+    String filePath = "SimpleCalculation.xlsx";
+    XSSFWorkbook workbook = getWorkbook(filePath);
     FormulaEvaluator formula = workbookFormulaEvaluatorConcurrentHashMap.get(workbook);
 
     Cell cell;
@@ -34,7 +34,45 @@ public class PoolWorkbook {
     cell = getCell(sheet, "C7");
     CellValue calculated = formula.evaluate(cell);
 
-    releaseWorkbook(workbook);
+    releaseWorkbook(filePath, workbook);
+
+    return calculated.getNumberValue();
+  }
+
+  public double calculateAdvanced(double medicard, double managedCare, double privateInsurance, double selfPay) throws IOException {
+    String filePath = "AdvancedCalculation.xlsx";
+    XSSFWorkbook workbook = getWorkbook(filePath);
+    FormulaEvaluator formula = workbookFormulaEvaluatorConcurrentHashMap.get(workbook);
+
+    Cell cell;
+    XSSFSheet inputSheet = workbook.getSheet("2A- Data Entry Worksheet");
+    XSSFSheet outputSheet = workbook.getSheet("2B- Est. Rev. Proj. Wksheet");
+
+    System.out.println("Setting medicard: " + medicard);
+    cell = getCell(inputSheet, "B6");
+    cell.setCellValue(medicard);
+    formula.notifyUpdateCell(cell);
+
+    System.out.println("Setting managedCare: " + managedCare);
+    cell = getCell(inputSheet, "B7");
+    cell.setCellValue(managedCare);
+    formula.notifyUpdateCell(cell);
+
+    System.out.println("Setting privateInsurance: " + privateInsurance);
+    cell = getCell(inputSheet, "B8");
+    cell.setCellValue(privateInsurance);
+    formula.notifyUpdateCell(cell);
+
+    System.out.println("Setting selfPay: " + selfPay);
+    cell = getCell(inputSheet, "B9");
+    cell.setCellValue(selfPay);
+    formula.notifyUpdateCell(cell);
+
+    // result
+    cell = getCell(outputSheet, "L80");
+    CellValue calculated = formula.evaluate(cell);
+
+    releaseWorkbook(filePath, workbook);
 
     return calculated.getNumberValue();
   }
@@ -47,11 +85,17 @@ public class PoolWorkbook {
     return cell;
   }
 
-  private XSSFWorkbook getWorkbook() throws IOException {
-    XSSFWorkbook workbook = pool.poll();
+  private XSSFWorkbook getWorkbook(String filePath) throws IOException {
+    ConcurrentLinkedQueue<XSSFWorkbook> workbookPool = poolMap.get(filePath);
+    if (workbookPool == null) {
+      poolMap.put(filePath, new ConcurrentLinkedQueue<>());
+      workbookPool = poolMap.get(filePath);
+    }
+
+    XSSFWorkbook workbook = workbookPool.poll();
 
     if (workbook == null) {
-      FileInputStream fileInputStream = new FileInputStream(new File("SimpleCalculation.xlsx"));
+      FileInputStream fileInputStream = new FileInputStream(new File(filePath));
       workbook = new XSSFWorkbook(fileInputStream);
       workbookFormulaEvaluatorConcurrentHashMap.put(workbook, workbook.getCreationHelper().createFormulaEvaluator());
     }
@@ -59,7 +103,8 @@ public class PoolWorkbook {
     return workbook;
   }
 
-  private void releaseWorkbook(XSSFWorkbook xssfWorkbook) throws IOException {
-    pool.add(xssfWorkbook);
+  private void releaseWorkbook(String filePath, XSSFWorkbook xssfWorkbook) throws IOException {
+    ConcurrentLinkedQueue<XSSFWorkbook> workbookPool = poolMap.get(filePath);
+    workbookPool.add(xssfWorkbook);
   }
 }

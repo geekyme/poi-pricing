@@ -32,9 +32,15 @@ public class QuotationController {
     return workbook.calculateAdvanced(medicard, managedCare, privateInsurance, selfPay);
   }
 
-  @GetMapping("/calculate/pool/{value}")
+  @GetMapping("/calculate/simple/pool/{value}")
   @ResponseBody
-  public double calculateWithObjectPool(@PathVariable int value) throws Throwable {
-    return poolWorkbook.calculate(value);
+  public double calculateSimpleWithPool(@PathVariable int value) throws Throwable {
+    return poolWorkbook.calculateSimple(value);
+  }
+
+  @GetMapping("/calculate/simple/advanced")
+  @ResponseBody
+  public double calculateAdvancedWithPool(@RequestParam double medicard, @RequestParam double managedCare, @RequestParam double privateInsurance, @RequestParam double selfPay) throws Throwable {
+    return poolWorkbook.calculateAdvanced(medicard, managedCare, privateInsurance, selfPay);
   }
 }
