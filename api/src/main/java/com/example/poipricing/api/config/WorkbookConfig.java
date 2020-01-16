@@ -5,10 +5,15 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class WorkbookConfig {
-	@Bean
+  @Bean
   public SyncWorkbook getWorkbook() throws Exception {
-		SyncWorkbook syncWorkbook = new SyncWorkbook();
-		
+    SyncWorkbook syncWorkbook = new SyncWorkbook();
+
     return syncWorkbook;
+  }
+
+  @Bean
+  public PoolWorkbook getPoolWorkbook() throws Exception {
+    return new PoolWorkbook();
   }
 }
