@@ -17,6 +17,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 public class PoolWorkbook {
   private ConcurrentHashMap<String, ConcurrentLinkedQueue<XSSFWorkbook>> poolMap = new ConcurrentHashMap<>();
   private ConcurrentHashMap<XSSFWorkbook, FormulaEvaluator> workbookFormulaEvaluatorConcurrentHashMap = new ConcurrentHashMap<>();
+  private int count = 0;
 
   public double calculateSimple(int value) throws IOException {
     String filePath = "SimpleCalculation.xlsx";
@@ -95,6 +96,7 @@ public class PoolWorkbook {
     XSSFWorkbook workbook = workbookPool.poll();
 
     if (workbook == null) {
+      System.out.println(++count);
       FileInputStream fileInputStream = new FileInputStream(new File(filePath));
       workbook = new XSSFWorkbook(fileInputStream);
       workbookFormulaEvaluatorConcurrentHashMap.put(workbook, workbook.getCreationHelper().createFormulaEvaluator());

@@ -38,7 +38,7 @@ public class QuotationController {
     return poolWorkbook.calculateSimple(value);
   }
 
-  @GetMapping("/calculate/simple/advanced")
+  @GetMapping("/calculate/advanced/pool")
   @ResponseBody
   public double calculateAdvancedWithPool(@RequestParam double medicard, @RequestParam double managedCare, @RequestParam double privateInsurance, @RequestParam double selfPay) throws Throwable {
     return poolWorkbook.calculateAdvanced(medicard, managedCare, privateInsurance, selfPay);
